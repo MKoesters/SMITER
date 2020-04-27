@@ -1,7 +1,7 @@
 """Main module."""
 import io
-import time
 import pathlib
+import time
 from typing import Callable, Dict, List, Tuple, Union
 
 import numpy as np
@@ -12,88 +12,83 @@ from psims.mzml import MzMLWriter
 
 import smiter
 from smiter.fragmentation_functions import AbstractFragmentor
-from smiter.lib import calc_mz, check_mzml_params, check_peak_properties, peak_properties_to_csv
+from smiter.lib import (
+    calc_mz,
+    check_mzml_params,
+    check_peak_properties,
+    peak_properties_to_csv,
+)
 from smiter.noise_functions import AbstractNoiseInjector
 from smiter.peak_distribution import distributions
 
 
 class Scan(dict):
-    """Summary."""
+    """Class to collect information for MS scans."""
 
     def __init__(self, data: dict = None):
-        """Summary.
+        """Initialize scan object.
 
         Args:
-            dict (TYPE): Description
+            dict (dict): Dict with spectrum data
         """
         if data is not None:
             self.update(data)
 
     @property
     def mz(self):
-        """Summary."""
+        """Mass to charge list setter."""
         v = self.get("mz", None)
         return v
 
     @mz.setter
     def mz(self, mz):
-        """Summary."""
+        """Get mass to charge values."""
         self["mz"] = mz
 
     @property
     def i(self):
-        """Summary."""
+        """Get intensitiy value."""
         v = self.get("i", None)
         return v
 
     @i.setter
     def i(self, i):
-        """Summary."""
+        """Set intensity values."""
         self["i"] = i
 
     @property
     def id(self):
-        """Summary."""
+        """Get scan ID."""
         v = self.get("id", None)
         return v
 
     @property
     def precursor_mz(self):
-        """Summary."""
+        """Get precursor mz value."""
         v = self.get("precursor_mz", None)
         return v
 
     @property
     def precursor_i(self):
-        """Summary."""
+        """Get precursor intensity value."""
         v = self.get("precursor_i", None)
         return v
 
     @property
     def precursor_charge(self):
-        """Summary."""
+        """Get precursor charge."""
         v = self.get("precursor_charge", None)
         return v
 
-    # @property
-    # def precursor_scan_id(self):
-    #     """Summary."""
-    #     v = self.get("precursor_scan_id", None)
-    #     return v
-
     @property
     def retention_time(self):
-        """Summary."""
+        """Get retention time."""
         v = self.get("rt", None)
         return v
 
     @property
     def ms_level(self):
-        """Summary.
-
-        Returns:
-            TYPE: Description
-        """
+        """Get ms level."""
         v = self.get("ms_level", None)
         return v
 
@@ -108,10 +103,14 @@ def write_mzml(
     """Write mzML file with chromatographic peaks and fragment spectra for the given molecules.
 
     Args:
-        file (Union[str, io.TextIOWrapper]): Description
-        molecules (List[str]): Description
-        fragmentation_function (Callable[[str], List[Tuple[float, float]]], optional): Description
-        peak_properties (Dict[str, dict], optional): Description
+        file (Union[str, io.TextIOWrapper]): File name or file object
+        peak_properties (Dict[str, dict]): Dict containing molecule as key and property dict as value
+        fragmentor (AbstractFragmentor): Fragmentor object
+        noise_injector (AbstractNoiseInjector): Noise injector object
+        mzml_params (Dict[str, Union[int, float, str]]): mzml parameters
+
+    Returns:
+        filename (str): Name of the output file
     """
     # check params and raise Exception(s) if necessary
     mzml_params = check_mzml_params(mzml_params)
@@ -136,25 +135,25 @@ def write_mzml(
     else:
         file_path = file
     path = pathlib.Path(file_path)
-    summary_path = path.parent.resolve() / 'molecule_summary.csv'
+    summary_path = path.parent.resolve() / "molecule_summary.csv"
     peak_properties_to_csv(peak_properties, summary_path)
     return filename
 
 
 def rescale_intensity(
     i: float, rt: float, molecule: str, peak_properties: dict, isotopologue_lib: dict
-):
+) -> float:
     """Rescale intensity value for a given molecule according to scale factor and distribution function.
 
     Args:
-        i (TYPE): Description
-        rt (TYPE): Description
-        molecule (TYPE): Description
-        peak_properties (TYPE): Description
-        isotopologue_lib (TYPE): Description
+        i (float): intensity
+        rt (float): retention time
+        molecule (str): molecule
+        peak_properties (dict): Dict containing molecule as key and property dict as value
+        isotopologue_lib (dict): Dict with molecule as key and dict with `mz` and `relabun` keys as value
 
     Returns:
-        TYPE: Description
+        i (float): rescaled intensity
     """
     scale_func = peak_properties[f"{molecule}"]["peak_function"]
     rt_max = (
@@ -193,16 +192,19 @@ def generate_scans(
     fragmentor: AbstractFragmentor,
     noise_injector: AbstractNoiseInjector,
     mzml_params: dict,
-):
-    """Summary.
+) -> tuple:
+    """Generate MS1 and MS2 scan objects with injected noise..
 
     Args:
-        isotopologue_lib (TYPE): Description
-        peak_properties (TYPE): Description
-        fragmentation_function (A): Description
-        mzml_params (TYPE): Description
+        isotopologue_lib (dict): Dict with molecule as key and dict with `mz` and `relabun` keys as value
+        peak_properties (dict): Dict containing molecule as key and property dict as value
+        fragmentor (AbstractFragmentor): Fragmentor object
+        noise_injector (AbstractNoiseInjector): Noise injector object
+        mzml_params (dict): mzml parameters
+
+    Returns:
+        scans and mol dict (List[Tuple[Scan, List[Scan]]] ,Dict[str, Dict[str, list]]): scans and molecule dict
     """
-    # breakpoint()
     logger.info("Start generating scans")
     t0 = time.time()
     gradient_length = mzml_params["gradient_length"]
@@ -322,11 +324,16 @@ def generate_molecule_isotopologue_lib(
     peak_properties: Dict[str, dict],
     charges: List[int] = None,
     trivial_names: Dict[str, str] = None,
-):
-    """Summary.
+) -> Dict[str, Dict[str, list]]:
+    """Generate Isotopolgue lib using pyqms and rewrite to a reduced format.
 
     Args:
-        molecules (TYPE): Description
+        peak_properties (Dict[str, dict]): Dict containing molecule as key and property dict as value
+        charges (List[int], optional): list of charges
+        trivial_names (Dict[str, str], optional): mapping from molecule to trivial name
+
+    Returns:
+        reduced_lib (Dict[str, Dict[str, list]]): Dict with molecule as key and dict with `mz` and `relabun` keys as value
     """
     if charges is None:
         charges = [1]
@@ -354,11 +361,8 @@ def write_scans(
     """Generate given scans to mzML file.
 
     Args:
-        file (Union[str, io.TextIOWrapper]): Description
-        scans (List[Tuple[Scan, List[Scan]]]): Description
-
-    Returns:
-        None: Description
+        file (Union[str, io.TextIOWrapper]): File name or file object
+        scans (List[Tuple[Scan, List[Scan]]]): List of MS1 scans and MS2 scans
     """
     t0 = time.time()
     logger.info("Start writing Scans")

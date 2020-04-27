@@ -10,39 +10,39 @@ from typing import Callable, Dict
 from scipy.stats import gamma
 
 
-def gauss_dist(x: float, sigma: float = 1, mu: float = 0):
+def gauss_dist(rt: float, sigma: float = 1, mu: float = 0):
     """Calc Gauss distribution.
 
     Args:
-        x (float): x
+        rt (float): retention time
         sigma (float, optional): standard deviation
         mu (float, optional): mean
 
     Returns:
-        float: y
+        float: intensity from distribution at time `rt`
     """
     return (
         1
         / (sigma * math.sqrt(2 * math.pi))
-        * pow(math.e, (-0.5 * pow(((x - mu) / sigma), 2)))
+        * pow(math.e, (-0.5 * pow(((rt - mu) / sigma), 2)))
     )
 
 
-def gamma_dist(x: float, a: float = 5, scale: float = 0.33):
+def gamma_dist(rt: float, a: float = 5, scale: float = 0.33):
     """Calc gamma distribution.
 
     Args:
-        x (float): Description
+        rt (float): retention time
         a (float, optional): Description
         scale (float, optional): Description
 
     Returns:
-        float: y
+        float: intensity from distribution at time `rt`
     """
-    return gamma.pdf(x, a=a, scale=scale)
+    return gamma.pdf(rt, a=a, scale=scale)
 
 
-distributions = {
+distributions: Dict[str, Callable] = {
     "gauss": gauss_dist,
     "gamma": gamma_dist,
-}  # type: Dict[str, Callable]
+}

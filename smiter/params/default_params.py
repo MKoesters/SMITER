@@ -1,3 +1,9 @@
+"""Smite default params.
+
+Attributes:
+    default_mzml_params (dict): General mzml parameters
+    default_peak_properties (TYPE): Peak properties
+"""
 # None means required, other is default value
 # non existent params are optional
 default_peak_properties = {

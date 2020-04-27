@@ -2,18 +2,22 @@
 import csv
 from io import TextIOWrapper
 from tempfile import _TemporaryFileWrapper
+from typing import Dict
 
 from smiter.params.default_params import default_mzml_params, default_peak_properties
 
 PROTON = 1.00727646677
 
 
-def calc_mz(mass: float, charge: int):
+def calc_mz(mass: float, charge: int) -> float:
     """Calculate m/z.
 
     Args:
-        mass (TYPE): Description
-        charge (TYPE): Description
+        mass (float): mass
+        charge (int): charge
+
+    Returns:
+        float: mass to charge value
     """
     mass = float(mass)
     charge = int(charge)
@@ -25,13 +29,13 @@ def check_mzml_params(mzml_params: dict) -> dict:
     """Summary.
 
     Args:
-        mzml_params (dict): Description
+        mzml_params (dict): dict with mzml parameters
 
     Returns:
-        dict: Description
+        dict: mzml parameters with default values set
 
     Raises:
-        Exception: Description
+        Exception: Fails im required parameter without default is missing
     """
     for default_param, default_value in default_mzml_params.items():
         # param not set and default param required
@@ -46,13 +50,13 @@ def check_peak_properties(peak_properties: dict) -> dict:
     """Summary.
 
     Args:
-        peak_properties (dict): Description
+        peak_properties (dict): Dict containing molecule as key and property dict as value
 
     Returns:
-        dict: Description
+        dict: Dict containing molecule as key and property dict as value
 
     Raises:
-        Exception: Description
+        Exception: Fails im required parameter without default is missing
     """
     for mol, properties in peak_properties.items():
         for default_param, default_value in default_peak_properties.items():
@@ -67,7 +71,15 @@ def check_peak_properties(peak_properties: dict) -> dict:
     return peak_properties
 
 
-def csv_to_peak_properties(csv_file):
+def csv_to_peak_properties(csv_file: str) -> Dict:
+    """Write csv file from peak properties.
+
+    Args:
+        csv_file (str): Csv file with peak properties
+
+    Returns:
+        Dict: peak properties
+    """
     peak_properties = {}
     with open(csv_file) as fin:
         reader = csv.DictReader(fin)
@@ -86,7 +98,16 @@ def csv_to_peak_properties(csv_file):
     return peak_properties
 
 
-def peak_properties_to_csv(peak_properties, csv_file):
+def peak_properties_to_csv(peak_properties: Dict[str, dict], csv_file: str) -> str:
+    """Wrirte peak properties dict to csv file.
+
+    Args:
+        peak_properties (Dict[str, dict]): Dict containing molecule as key and property dict as value
+        csv_file (file): name of the csv file
+
+    Returns:
+        str: name of the csv file
+    """
     if not isinstance(csv_file, TextIOWrapper):
         csv_file = open(csv_file, "w")
     csv_filename = csv_file.name

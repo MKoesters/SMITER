@@ -24,7 +24,7 @@ except ImportError:  # pragma: no cover
 
 
 class AbstractFragmentor(ABC):
-    """Summary."""
+    """Abstract base class for fragmentor objects."""
 
     @abstractmethod
     def __init__(self):
@@ -32,37 +32,40 @@ class AbstractFragmentor(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    def fragment(self, entity):
-        """Summary.
+    def fragment(self, molecule: str):
+        """Method to fragment a given molecule.
 
         Args:
-            entity (TYPE): Description
+            molecule (str): molecule to fragment
         """
         pass  # pragma: no cover
 
 
 class PeptideFragmentor(AbstractFragmentor):
-    """Summary."""
+    """Peptide fragmentor class."""
 
     def __init__(self, *args, **kwargs):
-        """Summary."""
+        """Initialize PeptideFragmentor object."""
         self.args = args
         self.kwargs = kwargs
 
-    def fragment(self, entity):
-        """Summary.
+    def fragment(self, molecule: str) -> np.ndarray:
+        """Method to fragment peptide.
 
         Args:
-            entity (TYPE): Description
+            molecule (str): peptide sequence
+
+        Returns:
+            np.array: Array with mz and intensity values
         """
-        results_table = PeptideFragment0r(entity, **self.kwargs).df
+        results_table = PeptideFragment0r(molecule, **self.kwargs).df
         i = np.array([100 for i in range(len(results_table))])
         mz_i = np.stack((results_table["mz"], i), axis=1)
         return mz_i
 
 
 class NucleosideFragmentor(AbstractFragmentor):
-    """Summary."""
+    """Nucleoside fragmentor class."""
 
     def __init__(self, nucleotide_fragment_kb: Dict[str, dict] = None):
         """Summary."""
@@ -82,11 +85,14 @@ class NucleosideFragmentor(AbstractFragmentor):
                 nuc_to_fragments[nuc_name].append(calc_mz(m, 1))
         self.nuc_to_fragments = nuc_to_fragments
 
-    def fragment(self, entity):
-        """Summary.
+    def fragment(self, molecule: str) -> np.ndarray:
+        """Method to fragment a nucleoside.
 
         Args:
-            entity (TYPE): Description
+            molecule (str): chemical formula of nucleoside present in `smiter.ext.nucleoside_fragmention_kb.py`
+
+        Returns:
+            np.ndarray: Array with mz and intensity values
         """
-        masses = self.nuc_to_fragments[entity]
+        masses = self.nuc_to_fragments[molecule]
         return np.array([(mass, 100) for mass in masses])

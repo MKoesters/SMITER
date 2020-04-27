@@ -36,7 +36,7 @@ easter_egg = """
 
 
 class AbstractNoiseInjector(ABC):
-    """Summary."""
+    """Abstract base class for noise injector classes."""
 
     def __init__(self, *args, **kwargs):
         """Initialize noise injector."""
@@ -48,8 +48,8 @@ class AbstractNoiseInjector(ABC):
 
         Args:
             scan (Scan): Scan object
-            *args: Description
-            **kwargs: Description
+            *args: Arguments
+            **kwargs: Keywordarguments
 
         """
         pass  # pragma: no cover
@@ -64,7 +64,20 @@ class AbstractNoiseInjector(ABC):
 
 
 class GaussNoiseInjector(AbstractNoiseInjector):
+    """Inject gaussian noise to scans.
+
+    Attributes:
+        args (tuple): argument list
+        kwargs (dict): Keywordarguments
+    """
+
     def __init__(self, *args, **kwargs):
+        """Initialize GaussianNoiseInjector object.
+
+        Args:
+            *args: Arguments
+            **kwargs: Keywordarguments
+        """
         # np.random.seed(1312)
         logger.info("Initialize GaussNoiseInjector")
         self.args = args
@@ -75,8 +88,8 @@ class GaussNoiseInjector(AbstractNoiseInjector):
 
         Args:
             scan (Scan): Scan object
-            *args: Description
-            **kwargs: Description
+            *args: Arguments
+            **kwargs: Keywordarguments
 
         """
         self.kwargs.update(kwargs)
@@ -91,9 +104,9 @@ class GaussNoiseInjector(AbstractNoiseInjector):
         """Generate ms1 noise.
 
         Args:
-            scan (Scan): Description
-            *args: Description
-            **kwargs: Description
+            scan (Scan): Scan object
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         mz_noise = self._generate_mz_noise(scan, *args, **kwargs)
         intensity_noise = self._generate_intensity_noise(scan, *args, **kwargs)
@@ -107,9 +120,9 @@ class GaussNoiseInjector(AbstractNoiseInjector):
         """Generate msn noise.
 
         Args:
-            scan (Scan): Description
-            *args: Description
-            **kwargs: Description
+            scan (Scan): Scan object
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         mz_noise = self._generate_mz_noise(scan, *args, **kwargs)
         intensity_noise = self._generate_intensity_noise(scan, *args, **kwargs)
@@ -130,8 +143,8 @@ class GaussNoiseInjector(AbstractNoiseInjector):
 
         Args:
             scan (Scan): Scan object
-            *args: Description
-            **kwargs: Description
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         ppm_offset = kwargs.get("ppm_offset", 0)
         ppm_var = kwargs.get("ppm_var", 1)
@@ -146,8 +159,8 @@ class GaussNoiseInjector(AbstractNoiseInjector):
 
         Args:
             scan (Scan): Scan object
-            *args: Description
-            **kwargs: Description
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         noise = np.random.normal(
             # np.array(np.zeros(len(scan.i))),
@@ -159,7 +172,20 @@ class GaussNoiseInjector(AbstractNoiseInjector):
 
 
 class UniformNoiseInjector(AbstractNoiseInjector):
+    """Inject uniform noise into scans.
+
+    Attributes:
+        args (tuple): argument list
+        kwargs (dict): Keywordarguments
+    """
+
     def __init__(self, *args, **kwargs):
+        """Initialize Uniformnoiseinecjtor object.
+
+        Args:
+            *args: arguments
+            **kwargs: keywordarguments
+        """
         # np.random.seed(1312)
         logger.info("Initialize UniformNoiseInjector")
         self.args = args
@@ -170,8 +196,8 @@ class UniformNoiseInjector(AbstractNoiseInjector):
 
         Args:
             scan (Scan): Scan object
-            *args: Description
-            **kwargs: Description
+            *args: Arguments
+            **kwargs: Keywordarguments
 
         """
         # breakpoint()
@@ -187,9 +213,9 @@ class UniformNoiseInjector(AbstractNoiseInjector):
         """Generate ms1 noise.
 
         Args:
-            scan (Scan): Description
-            *args: Description
-            **kwargs: Description
+            scan (Scan): Scan object
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         mz_noise = self._generate_mz_noise(scan, *args, **kwargs)
         intensity_noise = self._generate_intensity_noise(scan, *args, **kwargs)
@@ -202,9 +228,9 @@ class UniformNoiseInjector(AbstractNoiseInjector):
         """Generate msn noise.
 
         Args:
-            scan (Scan): Description
-            *args: Description
-            **kwargs: Description
+            scan (Scan): Scan object
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         mz_noise = self._generate_mz_noise(scan, *args, **kwargs)
         intensity_noise = self._generate_intensity_noise(scan, *args, **kwargs)
@@ -226,8 +252,8 @@ class UniformNoiseInjector(AbstractNoiseInjector):
 
         Args:
             scan (Scan): Scan object
-            *args: Description
-            **kwargs: Description
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         # noise_level = np.random.normal(ppm_offset * 5e-6, ppm_var * 5e-6, len(scan.mz))
         # get scaling from kwargs
@@ -243,8 +269,8 @@ class UniformNoiseInjector(AbstractNoiseInjector):
 
         Args:
             scan (Scan): Scan object
-            *args: Description
-            **kwargs: Description
+            *args: Arguments
+            **kwargs: Keywordarguments
         """
         # get scaling from kwargs
         noise = np.random.uniform(
