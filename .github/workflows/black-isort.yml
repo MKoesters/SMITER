@@ -1,8 +1,17 @@
-workflow "Lint on Push" {
-  on = "push"
-  resolves = ["Lint"]
-}
+name: Black Check
+# This workflow is triggered on pushes to the repository.
+on:
+  pull_request:
+      branches:
+        - dev
+        - master
 
-action "Lint" {
-  uses = "wrboyce/python-lint-action@master"
-}
+jobs:
+  build:
+    # Job name is Greeting
+    name: black-isort
+    # This job runs on Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Lint (isort/black)
+        uses: wrboyce/python-lint-action@v1.0.0
