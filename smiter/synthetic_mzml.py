@@ -1,7 +1,7 @@
 """Main module."""
 import io
-import time
 import pathlib
+import time
 from typing import Callable, Dict, List, Tuple, Union
 
 import numpy as np
@@ -12,7 +12,12 @@ from psims.mzml import MzMLWriter
 
 import smiter
 from smiter.fragmentation_functions import AbstractFragmentor
-from smiter.lib import calc_mz, check_mzml_params, check_peak_properties, peak_properties_to_csv
+from smiter.lib import (
+    calc_mz,
+    check_mzml_params,
+    check_peak_properties,
+    peak_properties_to_csv,
+)
 from smiter.noise_functions import AbstractNoiseInjector
 from smiter.peak_distribution import distributions
 
@@ -136,7 +141,7 @@ def write_mzml(
     else:
         file_path = file
     path = pathlib.Path(file_path)
-    summary_path = path.parent.resolve() / 'molecule_summary.csv'
+    summary_path = path.parent.resolve() / "molecule_summary.csv"
     peak_properties_to_csv(peak_properties, summary_path)
     return filename
 

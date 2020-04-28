@@ -29,7 +29,7 @@ def main():
     noise_injector = UniformNoiseInjector()
 
     file = NamedTemporaryFile("wb")
-    mzml_path = write_mzml(file,  peak_props, fragmentor, noise_injector, mzml_params)
+    mzml_path = write_mzml(file, peak_props, fragmentor, noise_injector, mzml_params)
     reader = pymzml.run.Reader(mzml_path)
     tic_tuples = []
     for pos, spec in enumerate(reader):

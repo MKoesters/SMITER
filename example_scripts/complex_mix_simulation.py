@@ -1,10 +1,10 @@
 import csv
+import warnings
 from pprint import pprint
 
 import click
 
 import smiter
-import warnings
 
 warnings.simplefilter("ignore")
 
@@ -22,7 +22,6 @@ def main(input_csv, output_mzml):
     smiter.synthetic_mzml.write_mzml(
         output_mzml, peak_properties, fragmentor, noise_injector, mzml_params
     )
-
 
 
 if __name__ == "__main__":
