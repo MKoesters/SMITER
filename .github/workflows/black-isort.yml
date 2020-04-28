@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: CurDir
-        run: pwd;ls
+        run: pwd
+      - name: LS
+        run: ls
       - name: Python Lint (isort/black)
         uses: wrboyce/python-lint-action@v1.0.0
