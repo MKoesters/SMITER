@@ -182,6 +182,7 @@ def rescale_intensity(
                 "sigma", peak_properties[f"{molecule}"]["peak_width"] / 10
             ),
         )
+        print(dist_scale_factor)
     elif scale_func == "gamma":
         dist_scale_factor = distributions[scale_func](
             rt,
@@ -291,7 +292,7 @@ def generate_scans(
         while len(mol_i) < 10:
             mol_i.append((None, -100, 0))
         # breakpoint()
-        logger.debug(f'mol_i {mol_i}')
+        logger.debug(f"mol_i {mol_i}")
         for mol, _mz, _intensity in sorted(mol_i, key=lambda x: x[2], reverse=True)[
             :10
         ]:
