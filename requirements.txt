@@ -8,3 +8,4 @@ loguru==0.4.1
 intervaltree==3.1.0
 pyteomics==4.3.3
 tqdm==4.54.1
+tox==3.14.0
